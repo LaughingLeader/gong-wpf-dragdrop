@@ -179,20 +179,20 @@ namespace GongSolutions.Wpf.DragDrop
 				{
 					if (((IEnumerable)m_DragInfo.Data).Cast<object>().Count() <= 10)
 					{
-						ItemsControl itemsControl = new ItemsControl();
+						ItemsControl itemsControl = new();
 						itemsControl.ItemsSource = (IEnumerable)m_DragInfo.Data;
 						itemsControl.ItemTemplate = template;
 
 						// The ItemsControl doesn't display unless we create a border to contain it.
 						// Not quite sure why this is...
-						Border border = new Border();
+						Border border = new();
 						border.Child = itemsControl;
 						adornment = border;
 					}
 				}
 				else
 				{
-					ContentPresenter contentPresenter = new ContentPresenter();
+					ContentPresenter contentPresenter = new();
 					contentPresenter.Content = m_DragInfo.Data;
 					contentPresenter.ContentTemplate = template;
 					adornment = contentPresenter;
@@ -319,7 +319,7 @@ namespace GongSolutions.Wpf.DragDrop
 
 					if (m_DragInfo.Effects != DragDropEffects.None && m_DragInfo.Data != null)
 					{
-						DataObject data = new DataObject(DataFormat.Name, m_DragInfo.Data);
+						DataObject data = new(DataFormat.Name, m_DragInfo.Data);
 
 						try
 						{
@@ -350,7 +350,7 @@ namespace GongSolutions.Wpf.DragDrop
 
 		static void DropTarget_PreviewDragOver(object sender, DragEventArgs e)
 		{
-			DropInfo dropInfo = new DropInfo(sender, e, m_DragInfo);
+			DropInfo dropInfo = new(sender, e, m_DragInfo);
 			IDropTarget dropHandler = GetDropHandler((UIElement)sender);
 			ItemsControl itemsControl = sender as ItemsControl;
 
@@ -419,7 +419,7 @@ namespace GongSolutions.Wpf.DragDrop
 
 		static void DropTarget_PreviewDrop(object sender, DragEventArgs e)
 		{
-			DropInfo dropInfo = new DropInfo(sender, e, m_DragInfo);
+			DropInfo dropInfo = new(sender, e, m_DragInfo);
 			IDropTarget dropHandler = GetDropHandler((UIElement)sender) ?? DefaultDropHandler;
 			IDragSource dragHandler = GetDragHandler((UIElement)sender) ?? DefaultDragHandler;
 

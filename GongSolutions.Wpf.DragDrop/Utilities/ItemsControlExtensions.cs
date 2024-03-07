@@ -18,9 +18,7 @@ namespace GongSolutions.Wpf.DragDrop.Utilities
 			{
 				// The CanSelectMultipleItems property is protected. Use reflection to
 				// get its value anyway.
-				return (bool)itemsControl.GetType()
-					.GetProperty("CanSelectMultipleItems", BindingFlags.Instance | BindingFlags.NonPublic)
-					.GetValue(itemsControl, null);
+				return (bool)itemsControl.GetType().GetProperty("CanSelectMultipleItems", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(itemsControl, null);
 			}
 			else if (itemsControl is ListBox)
 			{
@@ -78,7 +76,7 @@ namespace GongSolutions.Wpf.DragDrop.Utilities
 						throw new ArgumentException("Invalid value for searchDirection");
 				}
 
-				List<DependencyObject> hits = new List<DependencyObject>();
+				List<DependencyObject> hits = new();
 
 				VisualTreeHelper.HitTest(itemsControl, null,
 					result =>

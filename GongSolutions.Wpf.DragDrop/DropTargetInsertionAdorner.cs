@@ -37,7 +37,7 @@ namespace GongSolutions.Wpf.DragDrop
 
 				if (itemContainer != null)
 				{
-					Rect itemRect = new Rect(itemContainer.TranslatePoint(new Point(), AdornedElement),
+					Rect itemRect = new(itemContainer.TranslatePoint(new Point(), AdornedElement),
 						itemContainer.RenderSize);
 					Point point1, point2;
 					double rotation = 0;
@@ -90,12 +90,12 @@ namespace GongSolutions.Wpf.DragDrop
 			m_Pen = new Pen(Brushes.Gray, 2);
 			m_Pen.Freeze();
 
-			LineSegment firstLine = new LineSegment(new Point(0, -triangleSize), false);
+			LineSegment firstLine = new(new Point(0, -triangleSize), false);
 			firstLine.Freeze();
-			LineSegment secondLine = new LineSegment(new Point(0, triangleSize), false);
+			LineSegment secondLine = new(new Point(0, triangleSize), false);
 			secondLine.Freeze();
 
-			PathFigure figure = new PathFigure { StartPoint = new Point(triangleSize, 0) };
+			PathFigure figure = new() { StartPoint = new Point(triangleSize, 0) };
 			figure.Segments.Add(firstLine);
 			figure.Segments.Add(secondLine);
 			figure.Freeze();
@@ -105,7 +105,7 @@ namespace GongSolutions.Wpf.DragDrop
 			m_Triangle.Freeze();
 		}
 
-		static Pen m_Pen;
-		static PathGeometry m_Triangle;
+		static readonly Pen m_Pen;
+		static readonly PathGeometry m_Triangle;
 	}
 }

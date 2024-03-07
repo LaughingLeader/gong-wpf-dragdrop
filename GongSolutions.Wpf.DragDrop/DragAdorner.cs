@@ -41,7 +41,7 @@ namespace GongSolutions.Wpf.DragDrop
 
 		public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
 		{
-			GeneralTransformGroup result = new GeneralTransformGroup();
+			GeneralTransformGroup result = new();
 			result.Children.Add(base.GetDesiredTransform(transform));
 			result.Children.Add(new TranslateTransform(MousePosition.X - 4, MousePosition.Y - 4));
 
@@ -64,8 +64,8 @@ namespace GongSolutions.Wpf.DragDrop
 			get { return 1; }
 		}
 
-		AdornerLayer m_AdornerLayer;
-		UIElement m_Adornment;
+		readonly AdornerLayer m_AdornerLayer;
+		readonly UIElement m_Adornment;
 		Point m_MousePosition;
 	}
 }

@@ -33,6 +33,6 @@ namespace GongSolutions.Wpf.DragDrop
 				.Invoke(new[] { adornedElement });
 		}
 
-		AdornerLayer m_AdornerLayer;
+		readonly AdornerLayer m_AdornerLayer;
 	}
 }
