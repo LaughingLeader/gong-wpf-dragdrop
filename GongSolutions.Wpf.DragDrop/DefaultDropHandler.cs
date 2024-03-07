@@ -1,141 +1,142 @@
-﻿using System;
+﻿using GongSolutions.Wpf.DragDrop.Utilities;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using GongSolutions.Wpf.DragDrop.Utilities;
 using System.Windows.Controls;
-using System.ComponentModel;
 
 namespace GongSolutions.Wpf.DragDrop
 {
-    class DefaultDropHandler : IDropTarget
-    {
-        public virtual void DragOver(IDropInfo dropInfo)
-        {
-            if (CanAcceptData(dropInfo))
-            {
-                dropInfo.Effects = DragDropEffects.Copy;
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-            }
-        }
+	class DefaultDropHandler : IDropTarget
+	{
+		public virtual void DragOver(IDropInfo dropInfo)
+		{
+			if (CanAcceptData(dropInfo))
+			{
+				dropInfo.Effects = DragDropEffects.Copy;
+				dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+			}
+		}
 
-        public virtual void Drop(IDropInfo dropInfo)
-        {
-            int insertIndex = dropInfo.InsertIndex;
-            IList destinationList = GetList(dropInfo.TargetCollection);
-            IEnumerable data = ExtractData(dropInfo.Data);
+		public virtual void Drop(IDropInfo dropInfo)
+		{
+			int insertIndex = dropInfo.InsertIndex;
+			IList destinationList = GetList(dropInfo.TargetCollection);
+			IEnumerable data = ExtractData(dropInfo.Data);
 
-            if (dropInfo.DragInfo.VisualSource == dropInfo.VisualTarget)
-            {
-                IList sourceList = GetList(dropInfo.DragInfo.SourceCollection);
+			if (dropInfo.DragInfo.VisualSource == dropInfo.VisualTarget)
+			{
+				IList sourceList = GetList(dropInfo.DragInfo.SourceCollection);
 
-                foreach (object o in data)
-                {
-                    int index = sourceList.IndexOf(o);
+				foreach (object o in data)
+				{
+					int index = sourceList.IndexOf(o);
 
-                    if (index != -1)
-                    {
-                        sourceList.RemoveAt(index);
-                        
-                        if (sourceList == destinationList && index < insertIndex)
-                        {
-                            --insertIndex;
-                        }
-                    }
-                }
-            }
+					if (index != -1)
+					{
+						sourceList.RemoveAt(index);
 
-            foreach (object o in data)
-            {
-                destinationList.Insert(insertIndex++, o);
-            }
-        }
+						if (sourceList == destinationList && index < insertIndex)
+						{
+							--insertIndex;
+						}
+					}
+				}
+			}
 
-        protected static bool CanAcceptData(IDropInfo dropInfo)
-        {
-            if (dropInfo.DragInfo.SourceCollection == dropInfo.TargetCollection)
-            {
-                return GetList(dropInfo.TargetCollection) != null;
-            }
-            else if (dropInfo.DragInfo.SourceCollection is ItemCollection)
-            {
-                return false;
-            }
-            else
-            {
-                if (TestCompatibleTypes(dropInfo.TargetCollection, dropInfo.Data))
-                {
-                    return !IsChildOf(dropInfo.VisualTargetItem, dropInfo.DragInfo.VisualSourceItem);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+			foreach (object o in data)
+			{
+				destinationList.Insert(insertIndex++, o);
+			}
+		}
 
-        protected static IEnumerable ExtractData(object data)
-        {
-            if (data is IEnumerable && !(data is string))
-            {
-                return (IEnumerable)data;
-            }
-            else
-            {
-                return Enumerable.Repeat(data, 1);
-            }
-        }
+		protected static bool CanAcceptData(IDropInfo dropInfo)
+		{
+			if (dropInfo.DragInfo.SourceCollection == dropInfo.TargetCollection)
+			{
+				return GetList(dropInfo.TargetCollection) != null;
+			}
+			else if (dropInfo.DragInfo.SourceCollection is ItemCollection)
+			{
+				return false;
+			}
+			else
+			{
+				if (TestCompatibleTypes(dropInfo.TargetCollection, dropInfo.Data))
+				{
+					return !IsChildOf(dropInfo.VisualTargetItem, dropInfo.DragInfo.VisualSourceItem);
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
 
-        protected static IList GetList(IEnumerable enumerable)
-        {
-            if (enumerable is ICollectionView)
-            {
-                return ((ICollectionView)enumerable).SourceCollection as IList;
-            }
-            else
-            {
-                return enumerable as IList;
-            }
-        }
+		protected static IEnumerable ExtractData(object data)
+		{
+			if (data is IEnumerable && !(data is string))
+			{
+				return (IEnumerable)data;
+			}
+			else
+			{
+				return Enumerable.Repeat(data, 1);
+			}
+		}
 
-        protected static bool IsChildOf(UIElement targetItem, UIElement sourceItem)
-        {
-            ItemsControl parent = ItemsControl.ItemsControlFromItemContainer(targetItem);
+		protected static IList GetList(IEnumerable enumerable)
+		{
+			if (enumerable is ICollectionView)
+			{
+				return ((ICollectionView)enumerable).SourceCollection as IList;
+			}
+			else
+			{
+				return enumerable as IList;
+			}
+		}
 
-            while (parent != null)
-            {
-                if (parent == sourceItem)
-                {
-                    return true;
-                }
+		protected static bool IsChildOf(UIElement targetItem, UIElement sourceItem)
+		{
+			ItemsControl parent = ItemsControl.ItemsControlFromItemContainer(targetItem);
 
-                parent = ItemsControl.ItemsControlFromItemContainer(parent);
-            }
+			while (parent != null)
+			{
+				if (parent == sourceItem)
+				{
+					return true;
+				}
 
-            return false;
-        }
+				parent = ItemsControl.ItemsControlFromItemContainer(parent);
+			}
 
-        protected static bool TestCompatibleTypes(IEnumerable target, object data)
-        {
-            TypeFilter filter = (t, o) =>
-            {
-                return (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-            };
+			return false;
+		}
 
-            var enumerableInterfaces = target.GetType().FindInterfaces(filter, null);
-            var enumerableTypes = from i in enumerableInterfaces select i.GetGenericArguments().Single();
+		protected static bool TestCompatibleTypes(IEnumerable target, object data)
+		{
+			TypeFilter filter = (t, o) =>
+			{
+				return (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+			};
 
-            if (enumerableTypes.Count() > 0)
-            {
-                Type dataType = TypeUtilities.GetCommonBaseClass(ExtractData(data));
-                return enumerableTypes.Any(t => t.IsAssignableFrom(dataType));
-            }
-            else
-            {
-                return target is IList;
-            }
-        }
-    }
+			var enumerableInterfaces = target.GetType().FindInterfaces(filter, null);
+			var enumerableTypes = from i in enumerableInterfaces select i.GetGenericArguments().Single();
+
+			if (enumerableTypes.Count() > 0)
+			{
+				Type dataType = TypeUtilities.GetCommonBaseClass(ExtractData(data));
+				return enumerableTypes.Any(t => t.IsAssignableFrom(dataType));
+			}
+			else
+			{
+				return target is IList;
+			}
+		}
+	}
 }
